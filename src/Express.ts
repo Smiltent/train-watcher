@@ -3,6 +3,9 @@ import WebSocket, { WebSocketServer } from 'ws'
 import express from 'express'
 import { parse } from 'url'
 import http from 'http'
+import path from 'path'
+
+import rootRoutes from '../routes/root.routes.ts'
 
 export default class Express {
     private wss: WebSocketServer
@@ -12,12 +15,26 @@ export default class Express {
     private trainsList = new Map<string, Set<WebSocket>>()
 
     constructor(port: string | number = 3000) {
+        const isDev = process.env.NODE_ENV == "dev"
+
         this.app = express()
         this.server = http.createServer(this.app)
-        this.wss = new WebSocketServer({ server: this.server })
+        this.wss = new WebSocketServer({ noServer: true })
+
+        this.app.set("view engine", "ejs")
+        this.app.set("layout", "components/layout")
+        this.app.use(
+            "/public",
+            express.static(path.join(__dirname, "..", "public"), {
+                etag: !isDev,
+                lastModified: !isDev,
+                maxAge: isDev ? 0 : '60s'
+            })
+        )
+
+        this.app.use("/", rootRoutes)
 
         this.websockets()
-
         this.start(port)
     }
 

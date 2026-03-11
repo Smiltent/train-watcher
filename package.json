@@ -3,6 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev-build": "bun build public/ts/*.ts --outdir public/js/",
+    "build": "bun build public/ts/*.ts --outdir public/js/ --minify",
+    "start": "bun run build && bun index.ts",
+    "dev": "bun run dev-build && bun index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -15,6 +21,7 @@
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
     "express-ws": "^5.0.2"
   }
 }
